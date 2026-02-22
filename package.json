@@ -7,5 +7,15 @@
         "build": "npm run build --prefix client",
         "preview": "npm run preview --prefix client",
         "install-client": "npm install --prefix client"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.20.3",
+        "cors": "^2.8.5",
+        "dotenv": "^17.3.1",
+        "express": "^4.21.2",
+        "jsonwebtoken": "^9.0.2",
+        "multer": "^2.0.2",
+        "mysql2": "^3.17.4"
     }
 }

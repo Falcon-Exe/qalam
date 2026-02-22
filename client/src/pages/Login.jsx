@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, User, ArrowRight, Lock, Mail, LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Mail, Lock, ArrowRight } from 'lucide-react';
+import api from '../services/api';
 
 const Login = ({ onLogin }) => {
     const [role, setRole] = useState('student');
     const [loading, setLoading] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setTimeout(() => {
+        setError('');
+
+        try {
+            const { data } = await api.post('/auth/login', { username, password });
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            onLogin(data.user.role);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Authorization Failed');
+            console.error('Login Error:', err);
+        } finally {
             setLoading(false);
-            onLogin(role);
-        }, 1200);
+        }
     };
 
     return (
@@ -30,10 +43,10 @@ const Login = ({ onLogin }) => {
                     <div className="w-16 h-16 bg-primary rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-primary/20 mb-24 rotate-3 border-2 border-white/10">
                         <LayoutDashboard size={32} className="text-white" />
                     </div>
-                    <h1 className="text-4xl font-black tracking-tighter uppercase italic text-white flex items-center justify-center gap-12">
-                        UNION <span className="text-primary tracking-widest not-italic font-bold">PORTAL</span>
+                    <h1 className="text-4xl font-black tracking-tighter uppercase italic text-white flex flex-col items-center leading-none">
+                        AL <span className="text-primary tracking-widest not-italic font-black">QALAM</span>
                     </h1>
-                    <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em] mt-8">Secure Access • Class Management System</p>
+                    <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em] mt-12">College Union MUSF • Portal Access</p>
                 </div>
 
                 <div className="card-base border-white/10 shadow-2xl relative overflow-hidden">
@@ -55,14 +68,26 @@ const Login = ({ onLogin }) => {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-24">
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-danger/10 border border-danger/20 p-12 rounded-lg text-danger text-[10px] font-bold uppercase tracking-wider text-center"
+                            >
+                                {error}
+                            </motion.div>
+                        )}
                         <div className="space-y-8">
                             <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary ml-4 italic">Credentials</label>
                             <div className="relative group">
                                 <Mail className="absolute left-16 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-primary transition-colors" size={16} />
                                 <input
                                     type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     placeholder={role === 'admin' ? 'Administrator ID' : 'Roll Number'}
                                     className="input-base w-full pl-44"
+                                    required
                                 />
                             </div>
                         </div>
@@ -72,8 +97,11 @@ const Login = ({ onLogin }) => {
                                 <Lock className="absolute left-16 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-primary transition-colors" size={16} />
                                 <input
                                     type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Secret Key"
                                     className="input-base w-full pl-44"
+                                    required
                                 />
                             </div>
                         </div>

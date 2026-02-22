@@ -14,13 +14,17 @@ import Login from './pages/Login';
 import { Bell, User, ChevronDown, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Navbar = ({ onMenuClick, role }) => {
+const Navbar = ({ onMenuClick, user }) => {
   const location = useLocation();
   const getPageTitle = (pathname) => {
     if (pathname === '/') return 'Dashboard';
     const title = pathname.slice(1).replace(/-/g, ' ');
     return title.charAt(0).toUpperCase() + title.slice(1);
   };
+
+  const role = user?.role || 'student';
+  const name = user?.fullname || 'Student User';
+  const initial = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <header className="h-20 bg-card border-b border-white/5 flex items-center justify-between px-24 lg:px-32 sticky top-0 z-40 shadow-nav">
@@ -42,14 +46,14 @@ const Navbar = ({ onMenuClick, role }) => {
 
         <div className="flex items-center gap-12 pl-12 border-l border-white/10 group cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-            {role === 'admin' ? 'AS' : 'ST'}
+            {initial}
           </div>
           <div className="hidden sm:block">
             <p className="text-sm font-bold text-text-primary leading-none">
-              {role === 'admin' ? 'Adarsh S' : 'Student User'}
+              {name}
             </p>
             <p className="text-[12px] text-text-secondary mt-2">
-              {role === 'admin' ? 'Administrator' : 'Student'}
+              {role === 'admin' ? 'Administrator' : (user?.class_role || 'Student')}
             </p>
           </div>
           <ChevronDown size={14} className="text-text-secondary group-hover:text-white transition-colors" />
@@ -59,9 +63,9 @@ const Navbar = ({ onMenuClick, role }) => {
   );
 };
 
-function MainLayout({ role, onLogout }) {
+function MainLayout({ user, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isAdmin = role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="flex min-h-screen bg-background text-text-primary overflow-hidden">
@@ -96,12 +100,12 @@ function MainLayout({ role, onLogout }) {
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden relative">
-        <Navbar onMenuClick={() => setSidebarOpen(true)} role={role} />
+        <Navbar onMenuClick={() => setSidebarOpen(true)} user={user} />
 
         <main className="flex-1 w-full max-w-[1200px] mx-auto p-24 lg:p-32">
           <AnimatePresence mode="wait">
             <Routes>
-              <Route path="/" element={<Dashboard role={role} />} />
+              <Route path="/" element={<Dashboard role={user?.role} />} />
               <Route path="/announcements" element={<Announcements isAdmin={isAdmin} />} />
               <Route path="/events" element={<Events isAdmin={isAdmin} />} />
               <Route path="/funds" element={<Funds isAdmin={isAdmin} />} />
@@ -120,16 +124,41 @@ function MainLayout({ role, onLogout }) {
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState('student');
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   const handleLogin = (role) => {
-    setUserRole(role);
-    setIsLoggedIn(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
+    }
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
     setIsLoggedIn(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return <Login onLogin={handleLogin} />;
@@ -137,7 +166,7 @@ function App() {
 
   return (
     <Router>
-      <MainLayout role={userRole} onLogout={handleLogout} />
+      <MainLayout user={user} onLogout={handleLogout} />
     </Router>
   );
 }

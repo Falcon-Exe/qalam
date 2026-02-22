@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS class_union_portal;
-USE class_union_portal;
+-- Database schema for Railway/Public Deployment
+-- Note: 'CREATE DATABASE' and 'USE' are handled by the connection settings.
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
@@ -114,3 +114,10 @@ CREATE TABLE IF NOT EXISTS feedback (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Default Users (for testing)
+-- Admin: admin / admin123
+-- Student: student / student123
+INSERT INTO users (username, password, role, fullname) VALUES 
+('admin', '$2a$10$baT/W9/F6isl2r/m9zzZo.gRSxyricfmrhLksedz3urkZYv88e90O', 'admin', 'Adarsh S'),
+('student', '$2a$10$l7TPfXDJgOd4aPqfRaxZnOB8VvytsSZV3izG7xEsAicsl64L8wW3e', 'student', 'Sample Student');

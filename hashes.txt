@@ -1,0 +1,2 @@
+admin123:$2a$10$baT/W9/F6isl2r/m9zzZo.gRSxyricfmrhLksedz3urkZYv88e90O
+student123:$2a$10$l7TPfXDJgOd4aPqfRaxZnOB8VvytsSZV3izG7xEsAicsl64L8wW3e

@@ -22,6 +22,7 @@ const galleryRoutes = require('./routes/gallery');
 const attendanceRoutes = require('./routes/attendance');
 const feedbackRoutes = require('./routes/feedback');
 const studentRoutes = require('./routes/students');
+const dashboardRoutes = require('./routes/dashboard');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/announcements', announcementRoutes);
@@ -32,6 +33,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/', (req, res) => {
     res.send('Class Union Portal API is running...');
