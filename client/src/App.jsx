@@ -7,6 +7,7 @@ import Events from './pages/Events';
 import Funds from './pages/Funds';
 import Polls from './pages/Polls';
 import Gallery from './pages/Gallery';
+import Home from './pages/Home';
 import Attendance from './pages/Attendance';
 import Feedback from './pages/Feedback';
 import StudentDirectory from './pages/Students';
@@ -17,7 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = ({ onMenuClick, user }) => {
   const location = useLocation();
   const getPageTitle = (pathname) => {
-    if (pathname === '/') return 'Dashboard';
+    if (pathname === '/') return 'AL QALAM';
     const title = pathname.slice(1).replace(/-/g, ' ');
     return title.charAt(0).toUpperCase() + title.slice(1);
   };
@@ -105,7 +106,8 @@ function MainLayout({ user, onLogout }) {
         <main className="flex-1 w-full max-w-[1200px] mx-auto p-24 lg:p-32">
           <AnimatePresence mode="wait">
             <Routes>
-              <Route path="/" element={<Dashboard role={user?.role} />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard role={user?.role} />} />
               <Route path="/announcements" element={<Announcements isAdmin={isAdmin} />} />
               <Route path="/events" element={<Events isAdmin={isAdmin} />} />
               <Route path="/funds" element={<Funds isAdmin={isAdmin} />} />

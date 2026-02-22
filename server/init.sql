@@ -120,4 +120,8 @@ CREATE TABLE IF NOT EXISTS feedback (
 -- Student: student / student123
 INSERT INTO users (username, password, role, fullname) VALUES 
 ('admin', '$2a$10$baT/W9/F6isl2r/m9zzZo.gRSxyricfmrhLksedz3urkZYv88e90O', 'admin', 'Adarsh S'),
-('student', '$2a$10$l7TPfXDJgOd4aPqfRaxZnOB8VvytsSZV3izG7xEsAicsl64L8wW3e', 'student', 'Sample Student');
+('student', '$2a$10$l7TPfXDJgOd4aPqfRaxZnOB8VvytsSZV3izG7xEsAicsl64L8wW3e', 'student', 'Sample Student')
+ON DUPLICATE KEY UPDATE 
+    password = VALUES(password),
+    role = VALUES(role),
+    fullname = VALUES(fullname);

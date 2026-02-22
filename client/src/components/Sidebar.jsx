@@ -2,7 +2,7 @@ import React from 'react';
 import {
     LayoutDashboard, Megaphone, Calendar, Wallet,
     BarChart3, Image, ClipboardCheck, MessageSquare,
-    Users, LogOut
+    Users, LogOut, Sparkles
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -10,7 +10,8 @@ const Sidebar = ({ onSelect, onLogout }) => {
     const location = useLocation();
 
     const menuItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+        { icon: Sparkles, label: 'Home', path: '/' },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Megaphone, label: 'Announcements', path: '/announcements' },
         { icon: Calendar, label: 'Events', path: '/events' },
         { icon: Wallet, label: 'Funds', path: '/funds' },

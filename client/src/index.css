@@ -9,6 +9,9 @@
     --primary: #6366f1;
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --secondary: #8b5cf6;
   }
 
   body {
@@ -48,6 +51,42 @@
   .stat-label {
     @apply text-[14px] font-medium text-text-secondary;
   }
+
+  .card-base {
+    @apply bg-card rounded-2xl p-32 shadow-soft border border-white/10;
+  }
+
+  .card-hover {
+    @apply hover:border-primary/30 transition-all duration-300;
+  }
+
+  .input-base {
+    @apply bg-background border border-white/10 rounded-xl px-16 py-12 text-white placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 transition-all;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white font-bold rounded-xl px-24 py-16 flex items-center justify-center gap-8 hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .text-success {
+    color: var(--success);
+  }
+
+  .text-danger {
+    color: var(--danger);
+  }
+
+  .bg-success {
+    background-color: var(--success);
+  }
+
+  .bg-danger {
+    background-color: var(--danger);
+  }
+
+  .bg-secondary {
+    background-color: var(--secondary);
+  }
 }
 
 /* Custom Scrollbar */
@@ -61,4 +100,13 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-white/10 rounded-full hover:bg-white/20;
+}
+
+/* Autofill Overrides */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
+  -webkit-text-fill-color: #f8fafc !important;
 }
