@@ -67,7 +67,8 @@ const Gallery = ({ isAdmin = true }) => {
     const getImageUrl = (url) => {
         if (!url) return '';
         if (url.startsWith('http')) return url;
-        return `http://localhost:5000${url}`;
+        const base = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : '';
+        return `${base}${url}`;
     };
 
     return (
