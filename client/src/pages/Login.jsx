@@ -19,7 +19,7 @@ const Login = ({ onLogin }) => {
             const { data } = await api.post('/auth/login', { username, password });
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            onLogin(data.user.role);
+            onLogin(data.user);
         } catch (err) {
             setError(err.response?.data?.message || 'Authorization Failed');
             console.error('Login Error:', err);

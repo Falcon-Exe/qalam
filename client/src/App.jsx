@@ -86,7 +86,7 @@ const ProtectedRoute = ({ user, children }) => {
   return children;
 };
 
-function MainLayout({ user, onLogout }) {
+function MainLayout({ user, setUser, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const isAdmin = user?.role === 'admin';
@@ -134,7 +134,7 @@ function MainLayout({ user, onLogout }) {
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home user={user} />} />
-              <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login onLogin={() => window.location.reload()} />} />
+              <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login onLogin={(user) => setUser(user)} />} />
               <Route path="/register-admin" element={<RegisterAdmin />} />
 
               {/* Protected Routes */}
@@ -184,7 +184,7 @@ function App() {
 
   return (
     <Router>
-      <MainLayout user={user} onLogout={handleLogout} />
+      <MainLayout user={user} setUser={setUser} onLogout={handleLogout} />
     </Router>
   );
 }
