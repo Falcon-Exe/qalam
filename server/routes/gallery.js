@@ -3,11 +3,9 @@ const router = express.Router();
 const db = require('../db');
 const multer = require('multer');
 const path = require('path');
-
-// Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, path.join(__dirname, '../uploads/'));
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -38,9 +36,23 @@ router.post('/', upload.single('image'), async (req, res) => {
     try {
         const [result] = await db.execute(
             'INSERT INTO gallery (image_url, event_name, gallery_date, created_by) VALUES (?, ?, ?, ?)',
-            [image_url, event_name, gallery_date || new Date(), created_by]
+            [image_url, event_name, gallery_date || new Date().toISOString().split('T')[0], created_by]
         );
         res.status(201).json({ id: result.insertId, image_url, message: 'Image uploaded successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update moment (Admin)
+router.put('/:id', async (req, res) => {
+    const { event_name, gallery_date } = req.body;
+    try {
+        await db.execute(
+            'UPDATE gallery SET event_name = ?, gallery_date = ? WHERE id = ?',
+            [event_name, gallery_date, req.params.id]
+        );
+        res.json({ message: 'Memory updated successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -8,30 +8,38 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
 
-const StatCard = ({ icon: Icon, label, value, trend, isPositive, color }) => (
-    <motion.div
-        whileHover={{ y: -5 }}
-        className="nav-card relative overflow-hidden group cursor-default border-white/5 hover:border-primary/20 transition-all"
-    >
-        <div className={`absolute top-0 right-0 w-24 h-24 ${color} opacity-5 blur-3xl -mr-8 -mt-8 group-hover:opacity-20 transition-opacity`} />
+const StatCard = ({ icon: Icon, label, value, trend, isPositive, color, path }) => (
+    <Link to={path} className="block">
+        <motion.div
+            whileHover={{ y: -8, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="nav-card relative overflow-hidden group cursor-pointer border-white/5 hover:border-primary/20 transition-all shadow-xl hover:shadow-primary/10"
+        >
+            <div className={`absolute top-0 right-0 w-24 h-24 ${color} opacity-5 blur-3xl -mr-8 -mt-8 group-hover:opacity-20 transition-opacity`} />
 
-        <div className="flex items-center justify-between mb-16 relative z-10">
-            <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shadow-[0_0_15px_-5px_white] shadow-white/20`}>
-                <Icon size={20} className="text-white" />
-            </div>
-            {trend && (
-                <div className={`flex items-center gap-4 text-[10px] font-black uppercase tracking-widest ${isPositive ? 'text-success' : 'text-danger'}`}>
-                    {isPositive ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
-                    {trend}
+            <div className="flex items-center justify-between mb-16 relative z-10">
+                <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shadow-[0_0_15px_-5px_white] shadow-white/20`}>
+                    <Icon size={20} className="text-white" />
                 </div>
-            )}
-        </div>
+                <div className="flex flex-col items-end gap-4">
+                    {trend && (
+                        <div className={`flex items-center gap-4 text-[10px] font-black uppercase tracking-widest ${isPositive ? 'text-success' : 'text-danger'}`}>
+                            {isPositive ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
+                            {trend}
+                        </div>
+                    )}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
+                        <ArrowRight size={12} className="text-white/40" />
+                    </div>
+                </div>
+            </div>
 
-        <div className="relative z-10">
-            <h3 className="stat-value text-white h-auto mb-4 tracking-tighter">{value}</h3>
-            <p className="stat-label uppercase tracking-[0.2em] text-[10px] font-black opacity-60 group-hover:opacity-100 transition-opacity">{label}</p>
-        </div>
-    </motion.div>
+            <div className="relative z-10">
+                <h3 className="stat-value text-white h-auto mb-4 tracking-tighter">{value}</h3>
+                <p className="stat-label uppercase tracking-[0.2em] text-[10px] font-black opacity-60 group-hover:opacity-100 transition-opacity">{label}</p>
+            </div>
+        </motion.div>
+    </Link>
 );
 
 const ActivityItem = ({ icon: Icon, title, desc, time, color }) => (
@@ -135,13 +143,13 @@ const Dashboard = ({ role }) => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-24">
                 {isAdmin ? (
-                    <StatCard icon={Users} label="Total Students" value={loading ? "..." : stats.studentCount} trend="Active" isPositive={true} color="bg-primary" />
+                    <StatCard icon={Users} label="Total Students" value={loading ? "..." : stats.studentCount} trend="Active" isPositive={true} color="bg-primary" path="/students" />
                 ) : (
-                    <StatCard icon={ClipboardCheck} label="My Attendance" value={loading ? "..." : myAttendance} trend="Tracked" isPositive={true} color="bg-success" />
+                    <StatCard icon={ClipboardCheck} label="My Attendance" value={loading ? "..." : myAttendance} trend="Tracked" isPositive={true} color="bg-success" path="/attendance" />
                 )}
-                <StatCard icon={Megaphone} label="Announcements" value={loading ? "..." : stats.announcementCount} trend="Syncing" isPositive={true} color="bg-indigo-500" />
-                <StatCard icon={Calendar} label="Active Events" value={loading ? "..." : stats.eventCount} trend="Projected" isPositive={true} color="bg-cyan-500" />
-                <StatCard icon={Wallet} label={isAdmin ? "Total Funds" : "Class Balance"} value={loading ? "..." : formatCurrency(isAdmin ? stats.totalFunds : stats.totalFunds)} trend={isAdmin ? "Balanced" : "Available"} isPositive={true} color="bg-rose-500" />
+                <StatCard icon={Megaphone} label="Announcements" value={loading ? "..." : stats.announcementCount} trend="Syncing" isPositive={true} color="bg-indigo-500" path="/announcements" />
+                <StatCard icon={Calendar} label="Active Events" value={loading ? "..." : stats.eventCount} trend="Projected" isPositive={true} color="bg-cyan-500" path="/events" />
+                <StatCard icon={Wallet} label={isAdmin ? "Total Funds" : "Class Balance"} value={loading ? "..." : formatCurrency(isAdmin ? stats.totalFunds : stats.totalFunds)} trend={isAdmin ? "Balanced" : "Available"} isPositive={true} color="bg-rose-500" path="/funds" />
             </div>
 
             {/* Main Content Areas */}

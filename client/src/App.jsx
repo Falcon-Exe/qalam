@@ -12,9 +12,11 @@ import Attendance from './pages/Attendance';
 import Feedback from './pages/Feedback';
 import StudentDirectory from './pages/Students';
 import Login from './pages/Login';
+import RegisterAdmin from './pages/RegisterAdmin';
 import { Bell, User, ChevronDown, Menu, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import logo from './assets/logo.png';
 
 const Navbar = ({ onMenuClick, user }) => {
   const location = useLocation();
@@ -38,7 +40,12 @@ const Navbar = ({ onMenuClick, user }) => {
             <Menu size={20} />
           </button>
         )}
-        <h1 className="text-white text-xl lg:text-2xl font-black italic uppercase tracking-tighter">{getPageTitle(location.pathname)}</h1>
+        <Link to="/" className="flex items-center gap-12">
+          <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center shadow-lg border border-white/10 p-2">
+            <img src={logo} alt="Al Qalam Logo" className="w-full h-full object-contain" />
+          </div>
+          <h1 className="text-white text-xl lg:text-2xl font-black italic uppercase tracking-tighter">{getPageTitle(location.pathname)}</h1>
+        </Link>
       </div>
 
       <div className="flex items-center gap-24">
@@ -128,6 +135,7 @@ function MainLayout({ user, onLogout }) {
               {/* Public Routes */}
               <Route path="/" element={<Home user={user} />} />
               <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login onLogin={() => window.location.reload()} />} />
+              <Route path="/register-admin" element={<RegisterAdmin />} />
 
               {/* Protected Routes */}
               <Route path="/dashboard" element={<ProtectedRoute user={user}><Dashboard role={user?.role} /></ProtectedRoute>} />

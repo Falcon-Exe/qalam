@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { verifyToken, isAdmin } = require('../middleware/auth');
 
 // Get all transactions and summary
 router.get('/', async (req, res) => {
@@ -24,8 +25,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Add new transaction
-router.post('/', async (req, res) => {
+// Add new transaction (Admin Only)
+router.post('/', verifyToken, isAdmin, async (req, res) => {
     const { type, amount, description, transaction_date, created_by } = req.body;
     try {
         const [result] = await db.execute(
@@ -33,6 +34,30 @@ router.post('/', async (req, res) => {
             [type, amount, description, transaction_date || new Date(), created_by]
         );
         res.status(201).json({ id: result.insertId, message: 'Transaction recorded' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update a transaction (Admin Only)
+router.put('/:id', verifyToken, isAdmin, async (req, res) => {
+    const { type, amount, description, transaction_date } = req.body;
+    try {
+        await db.execute(
+            'UPDATE funds SET type = ?, amount = ?, description = ?, transaction_date = ? WHERE id = ?',
+            [type, amount, description, transaction_date, req.params.id]
+        );
+        res.json({ message: 'Transaction updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a transaction (Admin Only)
+router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
+    try {
+        await db.execute('DELETE FROM funds WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Transaction deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

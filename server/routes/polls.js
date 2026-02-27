@@ -4,6 +4,7 @@ const db = require('../db');
 
 // Get all polls with options and vote counts
 router.get('/', async (req, res) => {
+    const { user_id } = req.query;
     try {
         const [polls] = await db.execute('SELECT p.*, u.fullname as creator_name FROM polls p JOIN users u ON p.created_by = u.id ORDER BY p.created_at DESC');
 
@@ -11,12 +12,19 @@ router.get('/', async (req, res) => {
             const [options] = await db.execute('SELECT * FROM poll_options WHERE poll_id = ?', [poll.id]);
             const [votes] = await db.execute('SELECT option_id, COUNT(*) as count FROM votes WHERE poll_id = ? GROUP BY option_id', [poll.id]);
 
+            let userVotedOption = null;
+            if (user_id) {
+                const [userVote] = await db.execute('SELECT option_id FROM votes WHERE poll_id = ? AND user_id = ?', [poll.id, user_id]);
+                if (userVote.length > 0) userVotedOption = userVote[0].option_id;
+            }
+
             poll.options = options.map(opt => {
                 const vote = votes.find(v => v.option_id === opt.id);
                 return { ...opt, votes: vote ? vote.count : 0 };
             });
 
             poll.total_votes = votes.reduce((sum, v) => sum + v.count, 0);
+            poll.user_voted_option = userVotedOption;
         }
 
         res.json(polls);
@@ -70,6 +78,26 @@ router.post('/:id/vote', async (req, res) => {
         if (err.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ message: 'You have already voted on this poll' });
         }
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Remove a vote
+router.delete('/:id/vote', async (req, res) => {
+    const { user_id } = req.query;
+    const poll_id = req.params.id;
+
+    if (!user_id || !poll_id) {
+        return res.status(400).json({ error: 'Missing poll_id or user_id' });
+    }
+
+    try {
+        await db.execute(
+            'DELETE FROM votes WHERE poll_id = ? AND user_id = ?',
+            [poll_id, user_id]
+        );
+        res.json({ message: 'Vote removed' });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });

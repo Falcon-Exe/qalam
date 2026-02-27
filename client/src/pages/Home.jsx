@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Shield, Target, Award, Users, GraduationCap, Sparkles, BookOpen, Quote, ArrowRight, LayoutDashboard } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const Home = ({ user }) => {
     const pillars = [
@@ -31,11 +32,17 @@ const Home = ({ user }) => {
                         <Sparkles size={12} className="text-primary" />
                         <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-text-secondary">Official Class Union Portal</span>
                     </div>
+                    <div className="flex justify-center mb-16 md:mb-24">
+                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white/5 rounded-3xl flex items-center justify-center shadow-2xl border border-white/10 p-4 backdrop-blur-xl">
+                            <img src={logo} alt="Al Qalam Logo" className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]" />
+                        </div>
+                    </div>
+
                     <h1 className="text-4xl md:text-8xl font-black italic tracking-tighter text-white mb-16 md:mb-24 leading-none">
                         AL <span className="text-primary not-italic">QALAM</span>
                     </h1>
                     <p className="text-base md:text-xl text-text-secondary max-w-2xl mx-auto font-medium italic mb-24 md:mb-40 px-16">
-                        "Association for quality learning and academic molding"
+                        "quality  for Association learning and academic molding"
                     </p>
 
                     <Link to={user ? "/dashboard" : "/login"}>

@@ -31,4 +31,14 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Delete an announcement (Admin Only)
+router.delete('/:id', async (req, res) => {
+    try {
+        await db.execute('DELETE FROM announcements WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Announcement deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
