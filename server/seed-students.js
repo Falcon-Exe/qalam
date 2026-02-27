@@ -31,33 +31,57 @@ const students = [
 
 const seedStudents = async () => {
     try {
-        console.log('🌱 Seeding student login details...');
+        console.log('🌱 Starting final robust student login update...');
+
+        // 1. Delete the numeric-username students (only duplicates)
+        // We'll be very specific: delete if numeric username AND role is student
+        await db.execute("DELETE FROM users WHERE role = 'student' AND username REGEXP '^[0-9]+$'");
 
         for (const student of students) {
-            const username = student.id;
-            const password = student.id;
-            const fullname = student.name;
+            const id = student.id;
+            const name = student.name;
+            const hashedPassword = await bcrypt.hash(id, 10);
 
-            // Hash the password
-            const hashedPassword = await bcrypt.hash(password, 10);
+            // 2. Check if a user with this ID (username) already exists (could be admin)
+            const [idRows] = await db.execute("SELECT id, role FROM users WHERE username = ?", [id]);
 
-            // Using ID as BOTH username and password as requested.
+            if (idRows.length > 0) {
+                // User with this ID exists. Update their role to student and update password.
+                const userId = idRows[0].id;
+                await db.execute(
+                    "UPDATE users SET role = 'student', password = ?, fullname = ? WHERE id = ?",
+                    [hashedPassword, name, userId]
+                );
+                console.log(`✅ Updated existing user by ID: ${id} (${name})`);
 
-            await db.execute(
-                `INSERT INTO users (username, password, role, fullname) 
-                 VALUES (?, ?, 'student', ?) 
-                 ON DUPLICATE KEY UPDATE 
-                 password = VALUES(password), 
-                 fullname = VALUES(fullname)`,
-                [username, hashedPassword, fullname]
-            );
-            console.log(`✅ Seeded student: ${username} (${fullname})`);
+                // Also cleanup any student record with this name as username to avoid duplicates
+                await db.execute("DELETE FROM users WHERE fullname = ? AND username = ? AND role = 'student'", [name, name]);
+            } else {
+                // 3. Check if user exists by fullname
+                const [nameRows] = await db.execute("SELECT id FROM users WHERE fullname = ? AND role = 'student' LIMIT 1", [name]);
+
+                if (nameRows.length > 0) {
+                    const userId = nameRows[0].id;
+                    await db.execute(
+                        "UPDATE users SET username = ?, password = ? WHERE id = ?",
+                        [id, hashedPassword, userId]
+                    );
+                    console.log(`✅ Updated existing student by Name: ${name} -> ID: ${id}`);
+                } else {
+                    // Insert as new
+                    await db.execute(
+                        "INSERT INTO users (username, password, role, fullname) VALUES (?, ?, 'student', ?)",
+                        [id, hashedPassword, name]
+                    );
+                    console.log(`✨ Created new student: ${name} (ID: ${id})`);
+                }
+            }
         }
 
-        console.log('✨ All students seeded successfully!');
+        console.log('🎉 Production database successfully synchronized!');
         process.exit(0);
     } catch (err) {
-        console.error('❌ Seeding failed:', err);
+        console.error('❌ Update failed:', err);
         process.exit(1);
     }
 };
