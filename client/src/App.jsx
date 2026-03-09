@@ -17,6 +17,7 @@ import { Bell, User, ChevronDown, Menu, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import logo from './assets/logo.png';
+import { Analytics } from '@vercel/analytics/react';
 
 const Navbar = ({ onMenuClick, user }) => {
   const location = useLocation();
@@ -185,6 +186,7 @@ function App() {
   return (
     <Router>
       <MainLayout user={user} setUser={setUser} onLogout={handleLogout} />
+      <Analytics />
     </Router>
   );
 }
